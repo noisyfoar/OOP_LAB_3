@@ -18,11 +18,12 @@ class container {
 private:
 	// Pointer to store array created
 	element *arr = NULL;
+	element *cursor = arr;
 	// Array size
 	int size;
 	// Container size
 	int capacity;
-public:
+public: 
 	// default constructor
 	container() {
 		capacity = 1;
@@ -35,7 +36,22 @@ public:
 		arr = new element[capacity];
 		size = 0;
 	}
+
+	void growArr();
+	void reduceArr();
+	element first();
+	bool eol();
+	void prev();
+	void next();
+	void push_middle(element obj);
+	void push_begin(element obj);
+	void push_back(element obj);
+	void remove(int index);
 };
+
+void container:: growArr() {
+
+}
 
 int main(){
 
