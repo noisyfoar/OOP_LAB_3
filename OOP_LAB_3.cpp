@@ -1,55 +1,56 @@
 ﻿#include <iostream>
-#include <any>
+#include<string>
 
 using namespace std;
 
-class element {
-private:
-	any elem;
+class A {
 public:
-	element() {
-		elem = NULL;
+	int a;
+	string str;
+	A() {
+		a = rand();
+		str = "elem: " +  to_string(a);
 	}
-	element(any elem){
-		this->elem = elem;
+	int get_a() {
+		return a;
 	}
-	element& operator=(any obj) {
-		elem = obj;
-}
+	string get_str() {
+		return str;
+	}
 };
+ostream& operator<<(ostream &os,const A &obj) {
+	return os << obj.str;
+}
 
-
+template<typename t>
 class container {
 private:
 	// Pointer to store array created
-	element *arr = NULL;
-	element *cur = NULL;
+	t* arr = NULL;
 	// Array size
 	int size;
 	// Container size
 	int capacity;
-public: 
+public:
 	// default constructor
 	container() {
 		capacity = 1;
 		size = 0;
-		arr = new element[capacity];
-		cur = arr;
+		arr = new t[capacity];
 	}
 	// constuctor with parameter
 	container(int capacity) {
 		this->capacity = capacity;
-		arr = new element[capacity];
-		cur = arr;
+		arr = new t[capacity];
 		size = 0;
 	}
 
 	void growArr() {
-		element* temp = new element[capacity * 2];
+		t* temp = new t[capacity * 2];
 
 		capacity *= 2;
 
-		for (int i = 0; i < size; ++i) {
+		for (int i = 0; i <= size; ++i) {
 			temp[i] = arr[i];
 		}
 		delete[] arr;
@@ -58,34 +59,32 @@ public:
 	}
 	void reduceArr() {
 		capacity = size;
-		element* temp = new element[capacity];
+		t* temp = new t[capacity];
 
-		for (int i = 0; i < size; ++i) {
+		for (int i = 0; i <= size; ++i) {
 			temp[i] = arr[i];
 			delete[] arr;
 			arr = temp;
 		}
 	}
-	element first() {
-		return *cur;
-	}
-	bool eol() {
-		return cur == (arr + size);
-	}
-	void prev() {
-		--cur;
-	}
-	void next() {
-		++cur;
-	}
-	void push_middle(element obj);
-	void push_begin(element obj);
-	void push_back(element value) {
+	void push_back(t value) {
 		if (size == capacity) {
 			growArr();
 		}
 		arr[size] = value;
 		++size;
+	}
+	void push_middle(t obj) {
+
+	}
+	int search(t obj)
+	{
+		for (int i = 0; i < size; i++) {
+			if (arr[i] == obj) {
+				return i;
+			}
+		}
+		return -1;
 	}
 	void pop_back() {
 		arr[size - 1] = 0;
@@ -95,7 +94,7 @@ public:
 		}
 	}
 	void remove(int index) {
-		for (int i = index; i < size; ++i) {
+		for (int i = index; i <= size; ++i) {
 			arr[i] = arr[i + 1];
 		}
 		arr[size - 1] = 0;
@@ -104,20 +103,83 @@ public:
 			reduceArr();
 		}
 	}
-	any getObject() {
-		return *cur;
+	
+	t getAt(int index) {
+		if ((index <= size) && (index > 0)) {
+			return arr[index];
+		}
+		return NULL;
+	}
+	t setAt(int index, t obj) {
+		if ((index <= size) && (index > 0)) {
+			arr[index] = obj;
+		}
+		return NULL;
+	}
+	void insertAt(int index, t obj)
+	{
+		if (size == capacity) {
+			growArr();
+		}
+		for (int i = size - 1; i >= index; i--) {
+			arr[i + 1] = arr[i];
+		}
+		arr[index] = obj;
+		++size;
+	}
+	int get_size() {
+		return size;
 	}
 };
 
 
-int main(){
-	int n1 = 10;
-	string s1 = "asd";
-	container arr[2];
-	for (arr->first(); arr->eol(); arr->next()) {
-		cout << arr->getObject();
-	}
 
+int main() {
+	srand(time(NULL));
+	container<A*> arr;
+	clock_t start = clock();
+	for (int i = 0; i < 100000; ++i) {
+		arr.push_back(new A());
+	}
+	for (int i = 0; i < 1000; ++i) {
+		switch (rand() % 4)
+		{
+		case 0:
+			arr.push_back(new A());
+			break;
+		case 1:
+			if (arr.get_size()) {
+				arr.remove(rand() % arr.get_size());
+			}
+			break;
+		case 2:
+			if (arr.get_size()) {
+				arr.pop_back();
+			}
+			break;
+		case 3:
+			arr.getAt(rand() % arr.get_size());
+			break;
+		case 5:
+			arr.setAt(rand() % arr.get_size(), new A());
+			break;
+		case 6:
+			arr.search((new A()));
+			break;
+		case 7:
+			arr.insertAt(rand() % arr.get_size(), new A());
+			break;
+		}
+	}
+	clock_t end = clock();
+	double seconds = (double)(end - start) / CLOCKS_PER_SEC;
+
+	for (int i = 1; i < arr.get_size(); ++i) {
+		cout << *arr.getAt(i);
+		cout << '\n';
+	}
+	cout << '\n';
 	
+	cout << "Seconds to complete " << seconds << '\n';
 
 }
